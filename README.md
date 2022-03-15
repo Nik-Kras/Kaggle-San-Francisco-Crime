@@ -1,7 +1,8 @@
 # Kaggle-San-Francisco-Crime
 This is my solution for the Kaggle challenge named "San Francisco Crime Classification" in R. 
 
-<h2>Description of a problem</h2>.For 12 years all committed crimes in San Francisco were recorded. The information about crimes includes dates with precision to minutes, days of the week, name of the police department, address of street where the crime was committed, longitude (X), latitude (Y), resolution of crime, description of the crime, and category of crime. In total there are 9 features and one of them must be predicted. The dataset consists of 878,049 observations for training and 884,262 observations for testing. The testing data doesn’t include the next list of features: category of crime, description of crime, resolution. 
+<h2>Description of a problem</h2>
+For 12 years all committed crimes in San Francisco were recorded. The information about crimes includes dates with precision to minutes, days of the week, name of the police department, address of street where the crime was committed, longitude (X), latitude (Y), resolution of crime, description of the crime, and category of crime. In total there are 9 features and one of them must be predicted. The dataset consists of 878,049 observations for training and 884,262 observations for testing. The testing data doesn’t include the next list of features: category of crime, description of crime, resolution. 
 
 The idea is to predict the type of commited crime by given time, adress and other information. The given train data consists of  878,000+ observations and test data has 884,000+ observations. So the optimizaton of code plays significat role
 
