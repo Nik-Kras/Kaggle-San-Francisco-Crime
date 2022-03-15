@@ -13,3 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# Normalization -----------------------------------------------
+print("Data normalization...")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+for (i in c(1:8))
+{
+  train[,i] <- rescale(as.numeric(array(unlist(train[,..i]))))
+  test[,i]  <- rescale(as.numeric(array(unlist(test[,..i]))))
+}
+
+cat(sprintf("Time: %s\n", Sys.time()))
+print("Data normalization has been finished")
+print(head(train))
