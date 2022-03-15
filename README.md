@@ -14,3 +14,9 @@ Description of scripts
   <li>"6-Use-LogReg.R". The script shows implementation of a logistic regression based on pure math and theory. The model trains based on training dataset and then predicts test labels</li>
 </ul>
 
+Description of folders
+<ul>
+  <li> data/dataset. The place for train and testing datasets. Also includes example of submission for to Kaggle competition</li>
+  <li> data/output. The folder keeps any output data produced by scripts. It could be csv tables or figures</li>
+  <li> data/output/PCA. The folder keeps figures used for explanation of PCA processes</li>
+</ul>
