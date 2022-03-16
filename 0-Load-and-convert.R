@@ -69,9 +69,9 @@ ExpandDates <- function(Dates){
   h_m_s    <- matrix(unlist(strsplit(date_sep[2,], split=":", fixed=TRUE)), nrow=3)
   
   time_table <- data.table(
-    Years  = as.numeric(unlist(y_m_d[1,])),
-    Months = as.numeric(unlist(y_m_d[2,])),
-    Days   = as.numeric(unlist(y_m_d[3,])),
+    Year   = as.numeric(unlist(y_m_d[1,])),
+    Month  = as.numeric(unlist(y_m_d[2,])),
+    Day    = as.numeric(unlist(y_m_d[3,])),
     Time   = as.numeric(h_m_s[1,])*60 + as.numeric(h_m_s[2,])
   )
   return (time_table)
@@ -148,7 +148,7 @@ print("Separating labels is finished")
 
 # Categories distribution ------------------------------------
 print("The plot will show the distribution of categories/labels in traning set")
-print("The distribution of training labels can be used to compare with 
+cat("The distribution of training labels can be used to compare with 
        Distribution of a testing set labels. They must have the similar nature
        If sets were splitted equally")
 
@@ -164,6 +164,8 @@ cat(sprintf("Time: %s\n", Sys.time()))
 
 write.csv(Labels_train_numbers, file="data/output/TrainLabels.csv", 
           row.names=FALSE)
+
+rm(SubmitTable, frequency_labels, i, Labels_train, ListCategories)
 
 cat(sprintf("Time: %s\n", Sys.time()))
 print("Labels are saved")
