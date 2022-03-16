@@ -10,6 +10,10 @@ The idea is to predict the type of commited crime by given time, adress and othe
 
 The project is constructed in next way. There are numbered scripts, starting from "0-Load-and-convert.R" and finishing with "6-Use-LogReg.R". The main Idea is to run them one by one and read the console output to get a feedback of what is happening.
 
+<h3>How to run</h3>
+
+Run the script main.R which will call all the numbered scripts one by one. Or you can do it manually. Look at feedback in the terminal
+
 <h3>Description of scripts</h3>
 <ul>
   <li>"0-Load-and-convert.R". The script loads training and testing sets from dataset folder. It process them in a way that all strings will be replaced by numbers. The special field Data which showed information like "2015-05-13 23:53:00" was expanded to 4 different numerical fields - Year, Month, Day and Time where Time is a number of minutes in a Day   </li>
