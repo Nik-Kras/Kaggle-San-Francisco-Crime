@@ -76,3 +76,10 @@ print(head(train))
 # Show the variance of each feature
 par(mar=c(4,6,1,2))
 barplot(sapply(train, var), horiz=T, las=1, cex.names=0.8, log='x')
+
+# Take a smaller dataset to make a plot of it to see if the PCA can be applied
+step <- 3000
+test_step <- test[seq(1, nrow(test), step),]
+plot(test_step)
+
+rm(test_step, step)
