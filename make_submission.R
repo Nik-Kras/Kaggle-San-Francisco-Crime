@@ -14,12 +14,19 @@
 # limitations under the License.
 #
 
-source("0-Load-and-convert.R")
+library(mltools)
 
-source("1-Normalize.R")
-
-source("2-Apply-PCA.R")
-
-# Takes a lot of time
-# Comment if it is not needed
-source("3-Use-KNN.R")
+make_submit <- function(labesl_predict = knn.pred,
+                        category_names = ListCategories,
+                        name = "KNN_submission.csv",
+                        path = "data/output/Submit/"){
+  
+  submit           <- one_hot(as.data.table(labesl_predict))
+  colnames(submit) <- category_names
+  
+  Id = data.frame(0:(nrow(submit)-1))
+  colnames(Id) <- "Id"
+  submit <- cbind(Id, submit)
+  
+  write.csv(submit, file=paste(path, pname, sep=""), row.names=FALSE)
+}
