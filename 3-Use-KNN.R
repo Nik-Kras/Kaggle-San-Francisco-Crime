@@ -76,14 +76,16 @@ barplot(height=frequency_labels_step, names=ListCategories, las=2)
 
 # The search for the best model  -------------------------------
 
-knn.pred <- knn(train=train_set, test=validate_set, cl=labels_train, k=1)
+K = 1
+knn.pred <- knn(train=train_set, test=validate_set, cl=labels_train, k=K)
 knn.pred <- factor(as.character(knn.pred), levels = 1:39)
 
-labels_valid_factor <- factor(as.character(knn.pred),
+labels_valid_factor <- factor(as.character(labels_valid),
                               levels = 1:39)
 
-confusionMatrix(table(knn.pred,labels_valid))
+CM <- confusionMatrix(table(knn.pred,labels_valid_factor))
+accuracy <- CM$overall["Accuracy"]
 
-frequency_labels_step <- tabulate(knn.pred)
-par(mar=c(15,4,2,2))
-barplot(height=frequency_labels_step, names=ListCategories, las=2)
+cat("---------------------------------------------------\n")
+cat(sprintf("The KNN model parameters: K=%d\n", K))
+cat(sprintf("The accuracy is %.2f%% \n", accuracy*100))

@@ -19,3 +19,5 @@ source("0-Load-and-convert.R")
 source("1-Normalize.R")
 
 source("2-Apply-PCA.R")
+
+source("3-Use-KNN.R")
