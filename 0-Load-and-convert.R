@@ -52,6 +52,7 @@ setcolorder(test, c("Dates",
                     "DayOfWeek", 
                     "PdDistrict",
                     "X", "Y"))
+print("Comment: In future the Adress may be not deleted, but used")
 
 cat(sprintf("Time: %s\n", Sys.time()))
 print("Deleting features and reordering is finished")
@@ -165,7 +166,7 @@ cat(sprintf("Time: %s\n", Sys.time()))
 write.csv(Labels_train_numbers, file="data/output/TrainLabels.csv", 
           row.names=FALSE)
 
-rm(SubmitTable, frequency_labels, i, Labels_train, ListCategories)
+rm(SubmitTable, frequency_labels, i, Labels_train)
 
 cat(sprintf("Time: %s\n", Sys.time()))
 print("Labels are saved")
