@@ -172,6 +172,8 @@ cat(sprintf("Time: %s\n", Sys.time()))
 
 # Make and save the submission  --------------------------------
 
+cat("Making submission file!")
+
 source('make_submission.R')
 
 make_submit(labesl_predict = knn.pred,
