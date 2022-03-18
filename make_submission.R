@@ -28,5 +28,5 @@ make_submit <- function(labesl_predict = knn.pred,
   colnames(Id) <- "Id"
   submit <- cbind(Id, submit)
   
-  write.csv(submit, file=paste(path, pname, sep=""), row.names=FALSE)
+  write.csv(submit, file=paste(path, name, sep=""), row.names=FALSE)
 }
