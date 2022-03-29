@@ -21,3 +21,16 @@
 # Show crime types over variables like hours, day, coordinates
 
 # 
+
+
+# Categories distribution ------------------------------------
+print("The plot will show the distribution of categories/labels in traning set")
+cat("The distribution of training labels can be used to compare with 
+       Distribution of a testing set labels. They must have the similar nature
+       If sets were splitted equally")
+
+frequency_labels <- table(Labels_train_numbers)
+
+# Increase margin so the text is visiable and plot the bar
+par(mar=c(15,4,2,2))
+barplot(height=frequency_labels, names=ListCategories, las=2)
