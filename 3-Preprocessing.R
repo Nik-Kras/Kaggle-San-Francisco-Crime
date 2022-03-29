@@ -14,6 +14,31 @@
 # limitations under the License.
 #
 
+# Convert strings to numbers ---------------------------------
+print("Converting strings to numbers...")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+key_names <- unique(train$DayOfWeek)
+for (i in 1:length(key_names))
+{
+  train$DayOfWeek[train$DayOfWeek == key_names[i]]  <- i
+  test$DayOfWeek [test$DayOfWeek  == key_names[i]]  <- i
+}
+
+key_names <- unique(train$PdDistrict)
+for (i in 1:length(key_names))
+{
+  train$PdDistrict[train$PdDistrict == key_names[i]]  <- i
+  test$PdDistrict [test$PdDistrict  == key_names[i]]  <- i
+}
+
+rm(i, key_names)
+
+cat(sprintf("Time: %s\n", Sys.time()))
+print("Converting strings to numbers has been finished.")
+print(head(train))
+
+
 # Delete unnecessary features ---------------------------------
 # They are not present in testing data
 # Reorder for comfort
@@ -62,7 +87,29 @@ cat(sprintf("Time: %s\n", Sys.time()))
 print("Converting strings to numbers has been finished.")
 print(head(train))
 
+# Delete unnecessary features ---------------------------------
+# They are not present in testing data
+# Reorder for comfort
+print("Deleting features and reordering...")
+cat(sprintf("Time: %s\n", Sys.time()))
 
+train[, c("Descript","Resolution","Address"):=NULL]
+setcolorder(train, c("Dates", 
+                     "DayOfWeek", 
+                     "PdDistrict",
+                     "X", "Y", 
+                     "Category"))     
+test[, c("Address", "Id"):=NULL]
+setcolorder(test, c("Dates", 
+                    "DayOfWeek", 
+                    "PdDistrict",
+                    "X", "Y"))
+print("Comment: In future the Adress may be not deleted, but used")
+
+cat(sprintf("Time: %s\n", Sys.time()))
+print("Deleting features and reordering is finished")
+print("The training data currently looks like: ")
+print(head(train))
 
 
 # Normalization -----------------------------------------------

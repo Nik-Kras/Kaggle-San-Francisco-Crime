@@ -14,20 +14,6 @@
 # limitations under the License.
 #
 
-source("0-Load-and-convert.R")
+source("0-Load-data.R")
 
-source("1-Normalize.R")
-
-source("2-Apply-PCA.R")
-
-
-# Ml technique takes a lot of time
-# Comment if it is not needed
-# Better use only one of scripts 3-6 and comment others
-source("3-Use-KNN.R")
-
-source("4-Use-SVM.R")
-
-source("5-Use-DNN.R")
-
-source("6-Use-LogReg.R")
+source("1-Feature-Extraction.R")
