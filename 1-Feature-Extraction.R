@@ -171,3 +171,29 @@ test  <- cbind(test,  Address_New_test )
 
 rm(Address_New_train, Address_New_test, block_index)
 
+# Add coordinates grid  --------------------------------------
+
+# Remove training coordinates outliners
+# COMMENT: for testing data outliners will be assigned to most frequent 
+# crime type as the sample is not valid for ML
+# Boarder coordinates: https://en.wikipedia.org/wiki/Module:Location_map/data/San_Francisco_Bay_Area
+X_min = -122.6445
+X_max = -121.5871
+Y_max = 38.2033
+Y_min = 37.1897
+
+index_delete <- which( train$X > X_max | train$X < X_min | 
+                         train$Y > Y_max | train$Y < Y_min )
+
+cat(sprintf("Total number of coordinates outliners: %d\n", 
+            length(index_delete)))
+cat(sprintf("The outliners consisted %.6f%% of the dataset", 
+            length(index_delete)/nrow(train)))
+
+# Shift+Cntr+C
+# train <- train[-index_delete]
+# 
+# write.csv(train, file="data/output/TrainExtracted1.csv", 
+#           row.names=FALSE)
+# write.csv(test,  file="data/output/TestExtracted1.csv", 
+#           row.names=FALSE)
