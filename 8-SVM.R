@@ -46,6 +46,7 @@ train_set    <- train_step_m[dt,]
 # cat("Best parameters:\n")
 # print(tune$best.parameters)
 
+# **************************************************************************
 # !!! TAKES 19 HOURS !!! Run Once Only !!!
 # Find the best model comparing testing
 # I used different basises to make equal numbers in the list
@@ -97,9 +98,11 @@ for (k in normal_kernel_list)
 }
 write.csv(Accuracy, file="data/output/SVM/Accuracy_gamma_cost_kernel.csv", 
           row.names=FALSE)
+# **************************************************************************
 
 # Make 3D plots of accuracy
 
+Accuracy <- read.csv(file = 'data/output/SVM/Accuracy_gamma_cost_kernel.csv')
 axx <- list(
   title = "Cost"
 )
