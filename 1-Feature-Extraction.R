@@ -130,33 +130,33 @@ rm(Block)
 # 29.7% of addresses doesn't have a street number. They are replaced with 1203
 print("Storing the street number as separate feature...")
 cat(sprintf("Time: %s\n", Sys.time()))
-Street_Number <- rep(1203, nrow(train))
+StreetNumber <- rep(1203, nrow(train))
 for (i in 1:nrow(test)){
   
   each_word <- unlist(strsplit(Address_New_test[i], split=' ', fixed=TRUE))
   
   # If the first word is a number - store it
   if (!is.na(as.numeric(each_word[1]))) {
-    Street_Number[i] <- as.numeric(each_word[1])
+    StreetNumber[i] <- as.numeric(each_word[1])
     Address_New_test[i] <- paste(each_word[-1], collapse = " ")
   }
 
 }
-test <- cbind(test, Street_Number)
+test <- cbind(test, StreetNumber)
 
-Street_Number <- rep(1203, nrow(train))
+StreetNumber <- rep(1203, nrow(train))
 for (i in 1:nrow(train)){
   
   each_word <- unlist(strsplit(Address_New_train[i], split=' ', fixed=TRUE))
   
   # If the first word is a number - store it
   if (!is.na(as.numeric(each_word[1]))) {
-    Street_Number[i] <- as.numeric(each_word[1])
+    StreetNumber[i] <- as.numeric(each_word[1])
     Address_New_train[i] <- paste(each_word[-1], collapse = " ")
   }
   
 }
-train <- cbind(train, Street_Number)
+train <- cbind(train, StreetNumber)
 
 cat(sprintf("Time: %s\n", Sys.time()))
 print("Storing has been finished")
@@ -168,6 +168,9 @@ print(head(train))
 
 train <- cbind(train, Address_New_train)
 test  <- cbind(test,  Address_New_test )
+
+train[, c("Address"):=NULL]
+test [, c("Address"):=NULL]
 
 rm(Address_New_train, Address_New_test, block_index)
 
@@ -187,13 +190,13 @@ index_delete <- which( train$X > X_max | train$X < X_min |
 
 cat(sprintf("Total number of coordinates outliners: %d\n", 
             length(index_delete)))
-cat(sprintf("The outliners consisted %.6f%% of the dataset", 
+cat(sprintf("The outliners consisted %.6f%% of the dataset\n", 
             length(index_delete)/nrow(train)))
 
-# Shift+Cntr+C
-# train <- train[-index_delete]
-# 
-# write.csv(train, file="data/output/TrainExtracted1.csv", 
-#           row.names=FALSE)
-# write.csv(test,  file="data/output/TestExtracted1.csv", 
-#           row.names=FALSE)
+
+train <- train[-index_delete]
+
+write.csv(train, file="data/output/TrainExtracted1.csv", 
+          row.names=FALSE)
+write.csv(test,  file="data/output/TestExtracted1.csv", 
+          row.names=FALSE)
