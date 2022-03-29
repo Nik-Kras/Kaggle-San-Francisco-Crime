@@ -22,6 +22,32 @@
 
 # 
 
+block_index <- rep(0, nrow(test))
+for (i in 1:nrow(test))
+{
+  temp <- which(unlist(strsplit(test$Address[i], " ")) %in% c("Block"))
+  if ( length(temp)>0 )
+  {
+    block_index[i] <- temp
+  }
+}
+print("Testing data")
+print(table(block_index))
+
+block_index <- rep(0, nrow(train))
+for (i in 1:nrow(train))
+{
+  temp <- which(unlist(strsplit(train$Address[i], " ")) %in% c("Block"))
+  if ( length(temp)>0 )
+  {
+    block_index[i] <- temp
+  }
+}
+print("Training data")
+print(table(block_index))
+
+plot(table(train$Minutes))
+
 
 # Categories distribution ------------------------------------
 print("The plot will show the distribution of categories/labels in traning set")
