@@ -124,6 +124,7 @@ train_set    <- train[dt,]
 labels_valid <- Labels_train_numbers[-dt]
 labels_train <- Labels_train_numbers[dt]
 
+# According to theory generall K is choosen as sqrt(nrow(train)) -> 940
 K_chosen = 30 #c(30, which.max(Accuracy))
 Accuracy_all <- c()
 

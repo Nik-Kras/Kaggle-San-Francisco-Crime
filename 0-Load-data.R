@@ -34,7 +34,8 @@ test  <- data.table(read.csv("./data/dataset/test.csv"))
 cat(sprintf("Time: %s\n", Sys.time()))
 print("Training data is loaded.")
 print("The training data currently looks like: ")
-print(head(train))
+# print(head(train))
+print(str(train))
 
 # Separate labels --------------------------------------------
 print("Separating labels...")

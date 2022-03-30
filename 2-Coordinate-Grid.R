@@ -14,9 +14,31 @@
 # limitations under the License.
 #
 
-set.seed(1203)
 
-rm(list=ls())
+# Installing Packages
+install.packages("ClusterR")
+install.packages("cluster")
 
-train <- data.table(read.csv("./data/output/TrainExtracted1.csv"))
-test  <- data.table(read.csv("./data/output/TestExtracted1.csv"))
+# Loading package
+library(ClusterR)
+library(cluster)
+
+# set.seed(1203)
+# 
+# rm(list=ls())
+# 
+# train <- data.table(read.csv("./data/output/TrainExtracted1.csv"))
+# test  <- data.table(read.csv("./data/output/TestExtracted1.csv"))
+
+step <- 1000
+train_step  <- train[seq(1, nrow(train), step),]
+
+coordinates <- cbind(train_step$X, train_step$Y)
+
+kmeans.re <- kmeans(coordinates), 
+                    centers = 10, 
+                    nstart = 20)
+kmeans.re
+
+plot(train_step$X, train_step$Y, 
+     col = kmeans.re$cluster)

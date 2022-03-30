@@ -116,6 +116,10 @@ print(head(train))
 print("Data normalization...")
 cat(sprintf("Time: %s\n", Sys.time()))
 
+
+# Instead of LOOP: prc_n <- as.data.frame(lapply(prc[2:9], normalize))
+# normalize - is a function that normalizes
+
 for (i in c(1:8))
 {
   train[,i] <- rescale(as.numeric(array(unlist(train[,..i]))))
