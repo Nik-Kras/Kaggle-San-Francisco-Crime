@@ -52,7 +52,8 @@ rm(expanded_time)
 cat(sprintf("Time: %s\n", Sys.time()))
 print("Dates detalisation is finished")
 print("The training data currently looks like: ")
-print(head(train))
+# print(head(train))
+print(str(train))
 
 # Address feature expansion ----------------------------------
 
@@ -121,7 +122,8 @@ train <- cbind(train, Block)
 
 print("Train Blocks detected")
 cat(sprintf("Time: %s\n", Sys.time()))
-print(head(train))
+# print(head(train))
+print(str(train))
 
 rm(Block)
 
@@ -160,7 +162,8 @@ train <- cbind(train, StreetNumber)
 
 cat(sprintf("Time: %s\n", Sys.time()))
 print("Storing has been finished")
-print(head(train))
+# print(head(train))
+print(str(train))
 
 # Add new Address feature without Block and Number
 # It decreases number of categories for training data
