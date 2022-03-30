@@ -182,11 +182,11 @@ rm(Address_New_train, Address_New_test, block_index)
 # Remove training coordinates outliners
 # COMMENT: for testing data outliners will be assigned to most frequent 
 # crime type as the sample is not valid for ML
-# Boarder coordinates: https://en.wikipedia.org/wiki/Module:Location_map/data/San_Francisco_Bay_Area
-X_min = -122.6445
-X_max = -121.5871
-Y_max = 38.2033
-Y_min = 37.1897
+# Boarder coordinates: Myself using Google Maps
+X_min = -122.3271
+X_max = -122.5176
+Y_max = 37.8350
+Y_min = 37.7075
 
 index_delete <- which( train$X > X_max | train$X < X_min | 
                          train$Y > Y_max | train$Y < Y_min )
