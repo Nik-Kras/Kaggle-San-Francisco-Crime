@@ -18,13 +18,11 @@
 # Installing Packages
 # install.packages("ClusterR")
 install.packages("cluster")
-install.packages("factoextra")
 # install.packages("imager")
 
 # Loading package
 # library(ClusterR)
 library(cluster)
-library(factoextra)
 # library(imager)
 
 set.seed(1203)
@@ -41,61 +39,52 @@ set.seed(1203)
 #  fviz_nbclust() - makes estimation of optimal K
 # By checking kmeans.re$size -- can build HeatMap
 
-cat(sprintf("Time: %s\n", Sys.time()))
-# step <- 20
-# train_step  <- train[seq(1, nrow(train), step),]
-
-coordinates <- cbind(train$X, train$Y)
-
-wss <- rep(0, 100)
-between <- rep(0, 100)
-size <- matrix(rep(rep(0, 100), 100), nrow=100)
-for (i in 1:100)
-{
-  kmeans.re <- kmeans(coordinates, 
-                      centers = i,
-                      iter.max = 20,
-                      nstart = 25)
-  wss[i] <- kmeans.re$tot.withinss
-  between[i] <- kmeans.re$betweenss
-  size[1:i,i] <- kmeans.re$size
-  
-  cat(sprintf("Time: %s\n", Sys.time()))
-  cat(sprintf("The number of K: %d\n", i))
-  print("********************************")
-}
-
-plot(wss)
-plot(wss[1:20])
+# cat(sprintf("Time: %s\n", Sys.time()))
+# # step <- 20
+# # train_step  <- train[seq(1, nrow(train), step),]
+# 
+# coordinates <- cbind(train$X, train$Y)
+# 
+# wss <- rep(0, 100)
+# between <- rep(0, 100)
+# size <- matrix(rep(rep(0, 100), 100), nrow=100)
+# for (i in 1:100)
+# {
+#   kmeans.re <- kmeans(coordinates, 
+#                       centers = i,
+#                       iter.max = 20,
+#                       nstart = 25)
+#   wss[i] <- kmeans.re$tot.withinss
+#   between[i] <- kmeans.re$betweenss
+#   size[1:i,i] <- kmeans.re$size
+#   
+#   cat(sprintf("Time: %s\n", Sys.time()))
+#   cat(sprintf("The number of K: %d\n", i))
+#   print("********************************")
+# }
+# 
+# plot(wss)
+# plot(wss[1:20])
+# 
+# # Best K lays in range(5-10) according to elbow rule
+# k_clusters <- 6
+# 
+# write.csv(wss, file="data/output/Clustering/Models_wss.csv", 
+#           row.names=FALSE)
+# write.csv(between, file="data/output/Clustering/Models_between.csv", 
+#           row.names=FALSE)
+# write.csv(size, file="data/output/Clustering/Models_size_in_clusters.csv", 
+#           row.names=FALSE)
 
 # Best K lays in range(5-10) according to elbow rule
-k_clusters <- 6
-
-write.csv(wss, file="data/output/Clustering/Models_wss.csv", 
-          row.names=FALSE)
-write.csv(between, file="data/output/Clustering/Models_between.csv", 
-          row.names=FALSE)
-write.csv(size, file="data/output/Clustering/Models_size_in_clusters.csv", 
-          row.names=FALSE)
-
-
-
-# fviz_nbclust(coordinates, kmeans, method = "wss", k.max = 100)
-cat(sprintf("Time: %s\n", Sys.time()))
-
-
-kmeans.re <- kmeans(coordinates, 
-                    centers = 20,
-                    nstart = 20)
-plot(train$X, train$Y, 
-     col = kmeans.re$cluster)
 
 # Train clustering --------------------------------------------
 
+k_clusters <- 6
 coordinates <- cbind(train$X, train$Y)
 kmeans.re <- kmeans(coordinates, 
-                    centers = 20,
-                    nstart = 20)
+                    centers = k_clusters,
+                    nstart = 25)
 print(kmeans.re)
 
 # View Clusters -----------------------------------------------
