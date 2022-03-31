@@ -16,59 +16,111 @@
 
 
 # Installing Packages
-install.packages("ClusterR")
+# install.packages("ClusterR")
 install.packages("cluster")
-install.packages("imager")
+install.packages("factoextra")
+# install.packages("imager")
 
 # Loading package
-library(ClusterR)
+# library(ClusterR)
 library(cluster)
-library(imager)
+library(factoextra)
+# library(imager)
 
-# set.seed(1203)
+set.seed(1203)
+
 # 
 # rm(list=ls())
 # 
 # train <- data.table(read.csv("./data/output/TrainExtracted1.csv"))
 # test  <- data.table(read.csv("./data/output/TestExtracted1.csv"))
 
-step <- 20
-train_step  <- train[seq(1, nrow(train), step),]
+# Search for the K --------------------------------------------
 
-coordinates <- cbind(train_step$X, train_step$Y)
+# Check wss for different K
+#  fviz_nbclust() - makes estimation of optimal K
+# By checking kmeans.re$size -- can build HeatMap
 
-kmeans.re <- kmeans(coordinates, 
-                    centers = 10, 
-                    nstart = 20)
-kmeans.re
-
-plot(train_step$X, train_step$Y, 
-     col = kmeans.re$cluster)
-
+cat(sprintf("Time: %s\n", Sys.time()))
+# step <- 20
+# train_step  <- train[seq(1, nrow(train), step),]
 
 coordinates <- cbind(train$X, train$Y)
 
+wss <- rep(0, 100)
+between <- rep(0, 100)
+size <- matrix(rep(rep(0, 100), 100), nrow=100)
+for (i in 1:100)
+{
+  kmeans.re <- kmeans(coordinates, 
+                      centers = i,
+                      iter.max = 20,
+                      nstart = 25)
+  wss[i] <- kmeans.re$tot.withinss
+  between[i] <- kmeans.re$betweenss
+  size[1:i,i] <- kmeans.re$size
+  
+  cat(sprintf("Time: %s\n", Sys.time()))
+  cat(sprintf("The number of K: %d\n", i))
+  print("********************************")
+}
+
+plot(wss)
+plot(wss[1:20])
+
+# Best K lays in range(5-10) according to elbow rule
+k_clusters <- 6
+
+write.csv(wss, file="data/output/Clustering/Models_wss.csv", 
+          row.names=FALSE)
+write.csv(between, file="data/output/Clustering/Models_between.csv", 
+          row.names=FALSE)
+write.csv(size, file="data/output/Clustering/Models_size_in_clusters.csv", 
+          row.names=FALSE)
+
+
+
+# fviz_nbclust(coordinates, kmeans, method = "wss", k.max = 100)
+cat(sprintf("Time: %s\n", Sys.time()))
+
+
 kmeans.re <- kmeans(coordinates, 
-                    centers = 9, 
+                    centers = 20,
                     nstart = 20)
-kmeans.re
+plot(train$X, train$Y, 
+     col = kmeans.re$cluster)
+
+# Train clustering --------------------------------------------
+
+coordinates <- cbind(train$X, train$Y)
+kmeans.re <- kmeans(coordinates, 
+                    centers = 20,
+                    nstart = 20)
+print(kmeans.re)
+
+# View Clusters -----------------------------------------------
 
 plot(train$X, train$Y, 
      col = kmeans.re$cluster)
 
-clusplot(coordinates,
-         kmeans.re$cluster,
-         lines = 0,
-         shade = TRUE,
-         color = TRUE,
-         labels = 9,
-         plotchar = FALSE,
-         span = TRUE,
-         main = paste("Cluster coordinates"),
-         xlab = 'Latitude',
-         ylab = 'Longitude')
+# clusplot(coordinates,
+#          kmeans.re$cluster,
+#          lines = 0,
+#          shade = TRUE,
+#          color = TRUE,
+#          labels = 9,
+#          plotchar = FALSE,
+#          span = TRUE,
+#          main = paste("Cluster coordinates"),
+#          xlab = 'Latitude',
+#          ylab = 'Longitude')
+
+# Use clusters to add new feature -----------------------------
 
 
+
+### For future improvement
+############################################################################
 # Add a San Francisco picture on the top -------------------------------
 # Notes:
 
