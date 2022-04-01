@@ -64,13 +64,16 @@ train_set    <- train_step[dt,]
 
 rf_default1 <- randomForest(Category ~ ., 
                             train_set,
-                            ntree=200,
+                            ntree=250,
                             mtry=4,        # Try 3 or 4
-                            maxnodes=13)
+                            maxnodes=20)
 
 predict_valid <- predict(rf_default1, validate_set[,1:12])
 
 print(confusionMatrix(predict_valid, validate_set$Category))
+
+plot(predict_valid)
+
 # Takes too long (and probably stucks)
 # rf_default <- train(formula = Category ~ ., 
 #                     data = train_step,
