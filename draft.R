@@ -22,5 +22,7 @@ model <- train(Species ~ .,
                )
 
 print(model)
+
+# MDSplot(rf, train$Species)
                
                
