@@ -183,8 +183,8 @@ rm(Address_New_train, Address_New_test, block_index)
 # COMMENT: for testing data outliners will be assigned to most frequent 
 # crime type as the sample is not valid for ML
 # Boarder coordinates: Myself using Google Maps
-X_min = -122.3271
-X_max = -122.5176
+X_max = -122.3271
+X_min = -122.5176
 Y_max = 37.8350
 Y_min = 37.7075
 
@@ -194,7 +194,7 @@ index_delete <- which( train$X > X_max | train$X < X_min |
 cat(sprintf("Total number of coordinates outliners: %d\n", 
             length(index_delete)))
 cat(sprintf("The outliners consisted %.6f%% of the dataset\n", 
-            length(index_delete)/nrow(train)))
+            100 * length(index_delete)/nrow(train)))
 
 
 train <- train[-index_delete]
