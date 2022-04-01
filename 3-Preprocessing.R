@@ -65,6 +65,7 @@ for (i in 1:length(key_names))
   train$StreetNumber[train$StreetNumber == key_names[i]]  <- i
   test$StreetNumber [test$StreetNumber  == key_names[i]]  <- i
 }
+test$StreetNumber[is.na(test$StreetNumber)] <- 86 # Deal with NA
 
 print("Convert Address...")
 cat(sprintf("Time: %s\n", Sys.time()))

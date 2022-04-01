@@ -198,6 +198,11 @@ cat(sprintf("The outliners consisted %.6f%% of the dataset\n",
 
 
 train <- train[-index_delete]
+train_labels <- data.table(read.csv("data/output/TrainLabels.csv"))
+train_labels <- train_labels[-index_delete]
+write.csv(train_labels, file="data/output/TrainLabelsExtracted1.csv", 
+          row.names=FALSE)
+
 
 write.csv(train, file="data/output/TrainExtracted1.csv", 
           row.names=FALSE)
