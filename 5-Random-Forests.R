@@ -62,11 +62,35 @@ train_set    <- train_step[dt,]
 
 # $Category <- factor(train_step$Category)
 
-rf_default1 <- randomForest(Category ~ ., 
-                            train_set,
-                            ntree=250,
-                            mtry=4,        # Try 3 or 4
-                            maxnodes=20)
+# rf_default1 <- randomForest(Category ~ ., 
+#                             train_set,
+#                             ntree=500,
+#                             mtry=4,        # Try 3 or 4
+#                             maxnodes=50)
+
+# # To check important variables
+# importance(model2)        
+# varImpPlot(model2) 
+
+# # Visualisation
+# hist(treesize(rf),
+#      main = "No. of Nodes for the Trees",
+#      col = "green")
+# Variable Importance
+# varImpPlot(rf,
+#            sort = T,
+#            n.var = 10,
+#            main = "Top 10 - Variable Importance")
+# importance(rf)
+# MeanDecreaseGini
+
+# Worked 30 mins for "each 10th sample"!!!
+rf_default1 <- train(Category ~ .,
+               data = train_set, 
+               method = 'rf',
+               trControl = trainControl(method = 'cv', 
+                                        number = 5)
+)
 
 predict_valid <- predict(rf_default1, validate_set[,1:12])
 
@@ -98,5 +122,7 @@ plot(predict_valid)
 # Print the results
 print(rf_default1)
 
+print("Random Forest is finished working.")
+cat(sprintf("Time: %s\n", Sys.time()))
 
 # test_Category <- predict(model, newdata = test)
