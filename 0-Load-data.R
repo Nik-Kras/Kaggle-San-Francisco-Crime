@@ -31,6 +31,8 @@ cat(sprintf("Time: %s\n", Sys.time()))
 train <- data.table(read.csv("./data/dataset/train.csv"))
 test  <- data.table(read.csv("./data/dataset/test.csv"))  
 
+test[, c("Id"):=NULL]
+
 cat(sprintf("Time: %s\n", Sys.time()))
 print("Training data is loaded.")
 print("The training data currently looks like: ")
