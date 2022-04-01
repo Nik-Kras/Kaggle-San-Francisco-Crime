@@ -83,7 +83,7 @@ set.seed(1203)
 k_clusters <- 6
 coordinates <- cbind(train$X, train$Y)
 kmeans.re <- kmeans(coordinates, 
-                    centers = k_clusters,
+                    centers = 100,
                     nstart = 25)
 print(kmeans.re)
 
