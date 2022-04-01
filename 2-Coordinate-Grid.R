@@ -17,21 +17,28 @@
 
 # Installing Packages
 # install.packages("ClusterR")
-install.packages("cluster")
+# install.packages("cluster")
 # install.packages("imager")
+# install.packages('clue')      # For predicting knn
 
 # Loading package
 # library(ClusterR)
 library(cluster)
+library(class)
+library(data.table)
+library(clue)                 # For predicting knn
 # library(imager)
 
 set.seed(1203)
 
-# 
-# rm(list=ls())
-# 
-# train <- data.table(read.csv("./data/output/TrainExtracted1.csv"))
-# test  <- data.table(read.csv("./data/output/TestExtracted1.csv"))
+
+rm(list=ls())
+
+print("Loading data...")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+train <- data.table(read.csv("./data/output/TrainExtracted1.csv"))
+test  <- data.table(read.csv("./data/output/TestExtracted1.csv"))
 
 # Search for the K --------------------------------------------
 
@@ -80,10 +87,13 @@ set.seed(1203)
 
 # Train clustering --------------------------------------------
 
+print("Apply clustering on train...")
+cat(sprintf("Time: %s\n", Sys.time()))
+
 k_clusters <- 6
 coordinates <- cbind(train$X, train$Y)
 kmeans.re <- kmeans(coordinates, 
-                    centers = 100,
+                    centers = k_clusters,
                     nstart = 25)
 print(kmeans.re)
 
@@ -91,6 +101,26 @@ print(kmeans.re)
 
 plot(train$X, train$Y, 
      col = kmeans.re$cluster)
+
+# Create cluster feature---------------------------------------
+
+print("Add clustering as features...")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+train <- cbind(train, CoordinatesCluster = kmeans.re$cluster)
+
+coordinates <- cbind(test$X, test$Y)
+test_predict <- cl_predict(kmeans.re, coordinates)
+
+test <- cbind(test, CoordinatesCluster = test_predict)
+
+print("Clustering is finished.")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+write.csv(test, file="data/output/Clustering/TestWithClusters.csv", 
+          row.names=FALSE)
+write.csv(train, file="data/output/Clustering/TrainWithClusters.csv", 
+          row.names=FALSE)
 
 # clusplot(coordinates,
 #          kmeans.re$cluster,
