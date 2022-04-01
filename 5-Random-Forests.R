@@ -53,12 +53,12 @@ cat(sprintf("Time: %s\n", Sys.time()))
 
 set.seed(1203)
 
-# step <- 100
-# train_step  <- train[seq(1, nrow(train), step),]
+step <- 20
+train_step  <- train[seq(1, nrow(train), step),]
 
 # $Category <- factor(train_step$Category)
 
-rf_default1 <- randomForest(Category ~ ., train)
+rf_default1 <- randomForest(Category ~ ., train_step)
 
 # Takes too long (and probably stucks)
 # rf_default <- train(formula = Category ~ ., 
