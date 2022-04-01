@@ -53,13 +53,24 @@ cat(sprintf("Time: %s\n", Sys.time()))
 
 set.seed(1203)
 
-step <- 20
+step <- 10
 train_step  <- train[seq(1, nrow(train), step),]
+
+dt           <- sort(sample(nrow(train_step), nrow(train_step)*0.7))
+validate_set <- train_step[-dt,]
+train_set    <- train_step[dt,]
 
 # $Category <- factor(train_step$Category)
 
-rf_default1 <- randomForest(Category ~ ., train_step)
+rf_default1 <- randomForest(Category ~ ., 
+                            train_set,
+                            ntree=200,
+                            mtry=4,        # Try 3 or 4
+                            maxnodes=13)
 
+predict_valid <- predict(rf_default1, validate_set[,1:12])
+
+print(confusionMatrix(predict_valid, validate_set$Category))
 # Takes too long (and probably stucks)
 # rf_default <- train(formula = Category ~ ., 
 #                     data = train_step,
@@ -82,7 +93,7 @@ rf_default1 <- randomForest(Category ~ ., train_step)
 #       tuneGrid = NULL)
 
 # Print the results
-print(rf_default)
+print(rf_default1)
 
 
 # test_Category <- predict(model, newdata = test)
