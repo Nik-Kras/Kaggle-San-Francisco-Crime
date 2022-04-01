@@ -13,3 +13,76 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+# install.packages("randomForest") # For randomForest
+library(randomForest)
+library(caret)
+library(e1071)
+library(class)
+library(data.table)
+
+# Load data --------------------------------------------------
+rm(list=ls())
+
+print("Loading data...")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+train <- data.table(read.csv("data/output/Normalization/TrainNormalize.csv"))
+test  <- data.table(read.csv("data/output/Normalization/TestNormalize.csv" ))
+train_labels <- data.table(read.csv("data/output/TrainLabelsExtracted1.csv"))
+
+colnames(train_labels) <- "Category"
+train_labels <- sapply(train_labels, FUN=factor)
+train_labels <- factor(train_labels)
+train <- cbind(train, Category = train_labels)
+
+# Search Random Forest parameters  ---------------------------
+
+# Methods to find best parameters:
+# 1. Random Search
+# 2. Grid Search
+
+# Lit Review shows: 
+#    number of trees = 200, 250 (ntree)
+#    max depth       = 13,  25  (maxnodes)
+
+# Use 10-Fold-Validation
+
+print("Search for the parameters...")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+set.seed(1203)
+
+# step <- 100
+# train_step  <- train[seq(1, nrow(train), step),]
+
+# $Category <- factor(train_step$Category)
+
+rf_default1 <- randomForest(Category ~ ., train)
+
+# Takes too long (and probably stucks)
+# rf_default <- train(formula = Category ~ ., 
+#                     data = train_step,
+#                     method = 'rf',
+#                     importance=TRUE)
+
+# rf_default <- train(formula = Category ~ ., 
+#                     data = train_step,
+#                     method = 'rf',
+#                     importance=TRUE,
+#                     trControl = trainControl(method = 'cv', # Use cross-validation
+#                                              number = 5)    # Use 5 folds for cross-validation
+#                     )
+
+# rf_default <- train(formula = Category ~ ., 
+#       data = train_step, 
+#       method = "rpart",
+#       metric= "Accuracy", 
+#       trControl = trainControl(), 
+#       tuneGrid = NULL)
+
+# Print the results
+print(rf_default)
+
+
+# test_Category <- predict(model, newdata = test)
