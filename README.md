@@ -15,6 +15,7 @@ The project is constructed in next way. There are numbered scripts, starting fro
 Run the script <code>main.R</code> which will call all the numbered scripts one by one. Or you can do it manually. Look at feedback in the terminal
 
 <h3>Description of scripts</h3>
+Scripts and their hierarchy is continuously changing, so the list may be not up to date
 <ul>
   <li> <code>0-Load-and-convert.R</code> The script loads training and testing sets from dataset folder. It process them in a way that all strings will be replaced by numbers. The special field Data which showed information like "2015-05-13 23:53:00" was expanded to 4 different numerical fields - Year, Month, Day and Time where Time is a number of minutes in a Day   </li>
   <li> <code>1-Normalize.R</code> The script normalizes all features as all of them are numerical. They are scaled from 0 to 1</li>
