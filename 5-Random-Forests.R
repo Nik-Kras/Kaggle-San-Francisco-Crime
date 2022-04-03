@@ -236,16 +236,21 @@ print("Applying 10-fold Cross Validation...")
 library(caret)
 library(e1071)
 
-numFolds <- trainControl(method = "cv", number = 10, search ="grid")
+rf_CV <- randomForest(Category ~ .,
+                      train_set,
+                      ntree=best_ntrees,
+                      mtry=best_mtry)
 
-tuneGrid <- expand.grid(.mtry = c(best_mtry))
-rf_CV <- train(Category ~ ., 
-                data = train, 
-                method = "rf", 
-                trControl = numFolds,
-                tuneGrid = tuneGrid,
-                ntree = best_ntrees,
-                importance = TRUE)
+# numFolds <- trainControl(method = "cv", number = 10, search ="grid")
+# 
+# tuneGrid <- expand.grid(.mtry = c(best_mtry))
+# rf_CV <- train(Category ~ ., 
+#                 data = train, 
+#                 method = "rf", 
+#                 trControl = numFolds,
+#                 tuneGrid = tuneGrid,
+#                 ntree = best_ntrees,
+#                 importance = TRUE)
 
 # # Worked 30 mins for "each 10th sample"!!!
 # rf_CV <- train(Category ~ .,
@@ -256,15 +261,37 @@ rf_CV <- train(Category ~ .,
 # )
 
 
-rf.pred <- predict(rf_CV, test)
+rf.pred <- predict(rf_CV, test, 
+                   type = 'prob')
+
+# To make a submission with ptobabilities -- Preparation
+SubmitTable <- data.table(read.csv("./data/dataset/sampleSubmission.csv",
+                                   check.names=FALSE))
+# First name is "ID" all next are categories
+ListCategories <- colnames(SubmitTable)[-1]  
+
+# To make a submission with ptobabilities
+rf.pred2 = data.frame(rf.pred)
+colnames(rf.pred2) <- as.numeric(substr(names(rf.pred2), 2, 3))
+right_order_names <- as.character(1:39)
+df<-rf.pred2[right_order_names]
+
+colnames(df) <- ListCategories
+Id = data.frame(0:(nrow(df)-1))
+colnames(Id) <- "Id"
+df <- cbind(Id, df)
+
+path = "data/output/Submit/"
+name = "RF_submission_all_train_prob.csv"
+write.csv(df, file=paste(path, name, sep=""), row.names=FALSE)
 
 # Reset levels order to make the submission table
-rf.pred2 <- as.numeric(levels(rf.pred))[rf.pred]
-rf.pred2 <- factor(rf.pred2, levels=1:39)
+# rf.pred2 <- as.numeric(levels(rf.pred))[rf.pred]
+# rf.pred2 <- factor(rf.pred2, levels=1:39)
+# 
+# rf_final_CV <- rf_CV$finalModel
 
-rf_final_CV <- rf_CV$finalModel
-
-save(rf_final_CV,file = "data/output/Random Forest/RF_model_m3_n200_CV.RData")
+save(rf_CV,file = "data/output/Random Forest/RF_model_m3_n200_CV_prob.RData")
 
 # To load model
 # load("data/output/Random Forest/RF_model_CV_each_10.RData")
@@ -277,11 +304,6 @@ save(rf_final_CV,file = "data/output/Random Forest/RF_model_m3_n200_CV.RData")
 cat("Making submission file!")
 
 source('make_submission.R')
-
-SubmitTable <- data.table(read.csv("./data/dataset/sampleSubmission.csv",
-                                   check.names=FALSE))
-# First name is "ID" all next are categories
-ListCategories <- colnames(SubmitTable)[-1]  
 
 make_submit(labesl_predict = rf.pred2,
             category_names = ListCategories,

@@ -20,6 +20,21 @@ library(lattice)
 library(caret)
 library(class)
 
+# Load data --------------------------------------------------
+rm(list=ls())
+
+print("Loading data...")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+train <- data.table(read.csv("data/output/Normalization/TrainNormalize.csv"))
+test  <- data.table(read.csv("data/output/Normalization/TestNormalize.csv" ))
+train_labels <- data.table(read.csv("data/output/TrainLabelsExtracted1.csv"))
+
+SubmitTable <- data.table(read.csv("./data/dataset/sampleSubmission.csv",
+                                   check.names=FALSE))
+# First name is "ID" all next are categories
+ListCategories <- colnames(SubmitTable)[-1]  
+
 # Definition of metrics ----------------------------------------
 
 # *The function which calcs accuracy or loss*
@@ -33,11 +48,12 @@ library(class)
 
 step <- 50
 train_step  <- train[seq(1, nrow(train), step),]
-labels_step <- Labels_train_numbers[seq(1, nrow(train), step)]
+labels_step <- train_labels[seq(1, nrow(train), step)]
 
 # tabulate - includes zero frequency, necessary for plot
 # table - doesn't include zero frequency
-frequency_labels_step <- tabulate(labels_step)
+frequency_labels_step <- table(labels_step)
+plot(frequency_labels_step)
 
 # Increase margin so the text is visiable and plot the bar
 par(mar=c(15,4,2,2))
@@ -78,12 +94,12 @@ barplot(height=frequency_labels_step, names=ListCategories, las=2)
 
 # The search for the best model  -------------------------------
 
-MaxK = 100
+K_check = c(100, 500, 900, 2000, 4000)
 Accuracy <- c()
 
 cat(sprintf("The loop is setting which will try all K from 1 to %d\n", MaxK))
 
-for (i in 1:MaxK)
+for (i in 1:K_check)
 {
   K <- i
   knn.pred <- knn(train=train_set, test=validate_set, cl=labels_train, k=K)
@@ -125,7 +141,7 @@ labels_valid <- Labels_train_numbers[-dt]
 labels_train <- Labels_train_numbers[dt]
 
 # According to theory generall K is choosen as sqrt(nrow(train)) -> 940
-K_chosen = 30 #c(30, which.max(Accuracy))
+K_chosen = K_check[which.max(Accuracy)] #c(30, which.max(Accuracy))
 Accuracy_all <- c()
 
 for (K in K_chosen)

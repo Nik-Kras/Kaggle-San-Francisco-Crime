@@ -20,6 +20,11 @@ train[, c("Descript","Resolution"):=NULL]
 
 
 # Expand dates features --------------------------------------
+
+# New method 
+# test$Dates <- strptime(test$Dates, format="%Y-%m-%d %H:%M:%S")
+# test$Hour <- test$Dates$hour
+
 print("Increasing feature count by dates detalisation...")
 cat(sprintf("Time: %s\n", Sys.time()))
 ExpandDates <- function(Dates){
