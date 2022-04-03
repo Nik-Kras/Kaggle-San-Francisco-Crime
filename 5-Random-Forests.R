@@ -240,7 +240,7 @@ numFolds <- trainControl(method = "cv", number = 10, search ="grid")
 
 tuneGrid <- expand.grid(.mtry = c(best_mtry))
 rf_CV <- train(Category ~ ., 
-                data = train_set, 
+                data = train, 
                 method = "rf", 
                 trControl = numFolds,
                 tuneGrid = tuneGrid,
@@ -264,13 +264,13 @@ rf.pred2 <- factor(rf.pred2, levels=1:39)
 
 rf_final_CV <- rf_CV$finalModel
 
-save(rf_final_CV,file = "data/output/Random Forest/RF_model_CV_each_10.RData")
+save(rf_final_CV,file = "data/output/Random Forest/RF_model_m3_n200_CV.RData")
 
 # To load model
 # load("data/output/Random Forest/RF_model_CV_each_10.RData")
 
-write.csv(rf.pred2, file="data/output/Submit/RF_10F_CV_each_10_train.csv", 
-          row.names=FALSE)
+# write.csv(rf.pred2, file="data/output/Submit/RF_10F_CV_each_10_train.csv", 
+#           row.names=FALSE)
 
 # Make and save the submission  --------------------------------
 
@@ -285,7 +285,7 @@ ListCategories <- colnames(SubmitTable)[-1]
 
 make_submit(labesl_predict = rf.pred2,
             category_names = ListCategories,
-            name = "RF_submission.csv",
+            name = "RF_submission_all_train.csv",
             path = "data/output/Submit/")
 
 print("Random Forest is finished working.")
