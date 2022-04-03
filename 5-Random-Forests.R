@@ -230,6 +230,11 @@ cat("Making submission file!")
 
 source('make_submission.R')
 
+SubmitTable <- data.table(read.csv("./data/dataset/sampleSubmission.csv",
+                                   check.names=FALSE))
+# First name is "ID" all next are categories
+ListCategories <- colnames(SubmitTable)[-1]  
+
 make_submit(labesl_predict = rf.pred,
             category_names = ListCategories,
             name = "RF_submission.csv",

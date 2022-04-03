@@ -50,6 +50,6 @@ rsconnect/
 
 # Ignore datasets created by code
 data/output/*.csv
-data/output/Submit/*submission.csv
+data/output/Submit/*.csv
 data/output/Clustering/*.csv
 data/output/Normalization/*.csv
