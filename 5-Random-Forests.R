@@ -67,76 +67,87 @@ train_set    <- train_step[dt,]
 
 # Search for ntree ###################################
 
-print("Search for the best number of trees")
-accuracy_ntree <- rep(0, 20)
-n_trees = seq(100,1500,100)
-for (i in n_trees)
-{
-  temp_acc1 <- rep(0,10)
-  for (j in 1:10)
-  {
-    rf_default1 <- randomForest(Category ~ .,
-                                train_set,
-                                ntree=i,
-                                mtry=3)
-    predict_valid1 <- predict(rf_default1, validate_set[,1:12])
-    temp_acc1[j] <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
-    
-    cat(sprintf("Attempt number %d/10\n", j))
-    cat(sprintf("Temp accuracy %f\n", temp_acc1[j]))
-  }
-  
-  temp_acc2 <- rep(0,10)
-  for (j in 1:10)
-  {
-    rf_default1 <- randomForest(Category ~ .,
-                                train_set,
-                                ntree=i,
-                                mtry=4)
-    predict_valid1 <- predict(rf_default1, validate_set[,1:12])
-    temp_acc2[j] <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
-    
-    cat(sprintf("Attempt number %d/10\n", j))
-    cat(sprintf("Temp accuracy %f\n", temp_acc2[j]))
-  }
-  
-  accuracy_ntree[i/100] <- (sum(temp_acc2)+sum(temp_acc1))/20
-  
-  cat(sprintf("ntree = %d/2000\n", i))
-  cat(sprintf("Accuracy is: %.2f%%\n", 100*accuracy_ntree[i/100]))
-  print("###################################")
-}
+# print("Search for the best number of trees")
+# accuracy_ntree <- rep(0, 20)
+# n_trees = seq(100,1500,100)
+# for (i in n_trees)
+# {
+#   temp_acc1 <- rep(0,10)
+#   for (j in 1:10)
+#   {
+#     rf_default1 <- randomForest(Category ~ .,
+#                                 train_set,
+#                                 ntree=i,
+#                                 mtry=3)
+#     predict_valid1 <- predict(rf_default1, validate_set[,1:12])
+#     temp_acc1[j] <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
+#     
+#     cat(sprintf("Attempt number %d/10\n", j))
+#     cat(sprintf("Temp accuracy %f\n", temp_acc1[j]))
+#   }
+#   
+#   temp_acc2 <- rep(0,10)
+#   for (j in 1:10)
+#   {
+#     rf_default1 <- randomForest(Category ~ .,
+#                                 train_set,
+#                                 ntree=i,
+#                                 mtry=4)
+#     predict_valid1 <- predict(rf_default1, validate_set[,1:12])
+#     temp_acc2[j] <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
+#     
+#     cat(sprintf("Attempt number %d/10\n", j))
+#     cat(sprintf("Temp accuracy %f\n", temp_acc2[j]))
+#   }
+#   
+#   accuracy_ntree[i/100] <- (sum(temp_acc2)+sum(temp_acc1))/20
+#   
+#   cat(sprintf("ntree = %d/2000\n", i))
+#   cat(sprintf("Accuracy is: %.2f%%\n", 100*accuracy_ntree[i/100]))
+#   print("###################################")
+# }
+# 
+# plot(x=n_trees, y=accuracy_ntree)
+# 
+# write.csv(accuracy_ntree, file="data/output/Random Forest/Accuracy_ntree.csv", 
+#           row.names=FALSE)
 
-plot(x=n_trees, y=accuracy_ntree)
+best_ntrees <- 700 # Rising from 100 to 700, then constant
 
-write.csv(accuracy_ntree, file="data/output/Submit/KNN_output_labels.csv", 
-          row.names=FALSE)
+# print("Search for the best number of features")
+# accuracy_mtry <- rep(0, 12)
+# mtry = 1:12
+# for (i in mtry)
+# {
+#   
+#   temp_acc2 <- rep(0,10)
+#   for (j in 1:10)
+#   {
+#     rf_default1 <- randomForest(Category ~ .,
+#                                 train_set,
+#                                 ntree=400,
+#                                 mtry=i)
+#     predict_valid1 <- predict(rf_default1, validate_set[,1:12])
+#     temp_acc2[j] <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
+# 
+#     cat(sprintf("Attempt number %d/10\n", j))
+#     cat(sprintf("Temp accuracy %f\n", temp_acc2[j]))
+#   }
+#   
+#   accuracy_mtry[i] <- sum(temp_acc2)/10
+#   
+#   cat(sprintf("Time: %s\n", Sys.time()))
+#   cat(sprintf("mtry = %d/12\n", i))
+#   cat(sprintf("Accuracies are: %.2f\n", 100*accuracy_mtry[i]))
+#   print("###################################")
+# }
+# 
+# write.csv(accuracy_mtry, file="data/output/Random Forest/Accuracy_mtry.csv",
+#           row.names=FALSE)
 
-best_ntrees <- 700
-
-print("Search for the best number of trees")
-accuracy_mtry <- rep(0, 12)
-mtry = 1:12
-for (i in mtry)
-{
-  rf_default1 <- randomForest(Category ~ .,
-                              train_set,
-                              ntree=best_ntrees,
-                              mtry=i)
-  
-  
-  predict_valid1 <- predict(rf_default1, validate_set[,1:12])
-  
-  c1 <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
-  
-  accuracy_mtry[i] <- c1
-  
-  cat(sprintf("ntree = %d/12\n", i))
-  cat(sprintf("Accuracies are: %.2f\n", 100*c1))
-  print("###################################")
-}
-
-best_mtry <- which.max(accuracy_mtry)
+accuracy_mtry <- read.csv("data/output/Random Forest/Accuracy_mtry.csv")
+accuracy_mtry <- as.numeric(unlist(accuracy_mtry))
+best_mtry <- which.max(accuracy_mtry)   # max mtry 2 or 3
 
 rf_default1 <- randomForest(Category ~ .,
                             train_set,
@@ -201,7 +212,25 @@ plot(predict_valid)
 # Print the results
 print(rf_default1)
 
+# Apply to test data -----------------------------------------
+cat(sprintf("Time: %s\n", Sys.time()))
+print("Predict test daatset...")
+
+rf.pred <- predict(rf_default1, test)
+
+write.csv(rf.pred, file="data/output/Submit/RF_each_10_train.csv", 
+          row.names=FALSE)
+
 print("Random Forest is finished working.")
 cat(sprintf("Time: %s\n", Sys.time()))
 
-# test_Category <- predict(model, newdata = test)
+# Make and save the submission  --------------------------------
+
+cat("Making submission file!")
+
+source('make_submission.R')
+
+make_submit(labesl_predict = rf.pred,
+            category_names = ListCategories,
+            name = "RF_submission.csv",
+            path = "data/output/Submit/")
