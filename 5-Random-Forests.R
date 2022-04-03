@@ -218,11 +218,56 @@ print("Predict test daatset...")
 
 rf.pred <- predict(rf_default1, test)
 
+# Reset levels order to make the submission table
+rf.pred2 <- as.numeric(levels(rf.pred))[rf.pred]
+rf.pred2 <- factor(rf.pred2, levels=1:39)
+
 write.csv(rf.pred, file="data/output/Submit/RF_each_10_train.csv", 
           row.names=FALSE)
 
-print("Random Forest is finished working.")
+# Create the best model and predict  -------------------------
+
 cat(sprintf("Time: %s\n", Sys.time()))
+print("Applying 10-fold Cross Validation...")
+
+library(caret)
+library(e1071)
+
+numFolds <- trainControl(method = "cv", number = 10, search ="grid")
+
+tuneGrid <- expand.grid(.mtry = c(best_mtry, best_mtry+1))
+rf_CV <- train(Category ~ ., 
+                data = train_set, 
+                method = "rf", 
+                trControl = numFolds,
+                tuneGrid = tuneGrid,
+                ntree = best_ntrees,
+                importance = TRUE)
+
+# # Worked 30 mins for "each 10th sample"!!!
+# rf_CV <- train(Category ~ .,
+#                data = train_set,
+#                method = 'rf',
+#                trControl = trainControl(method = 'cv',
+#                                         number = 10)
+# )
+
+
+rf.pred <- predict(rf_CV, test)
+
+# Reset levels order to make the submission table
+rf.pred2 <- as.numeric(levels(rf.pred))[rf.pred]
+rf.pred2 <- factor(rf.pred2, levels=1:39)
+
+rf_final_CV <- rf_CV$finalModel
+
+save(rf_final_CV,file = "data/output/Random Forest/RF_model_CV_each_10.RData")
+
+# To load model
+# load("data/output/Random Forest/RF_model_CV_each_10.RData")
+
+write.csv(rf.pred2, file="data/output/Submit/RF_10F_CV_each_10_train.csv", 
+          row.names=FALSE)
 
 # Make and save the submission  --------------------------------
 
@@ -235,7 +280,10 @@ SubmitTable <- data.table(read.csv("./data/dataset/sampleSubmission.csv",
 # First name is "ID" all next are categories
 ListCategories <- colnames(SubmitTable)[-1]  
 
-make_submit(labesl_predict = rf.pred,
+make_submit(labesl_predict = rf.pred2,
             category_names = ListCategories,
             name = "RF_submission.csv",
             path = "data/output/Submit/")
+
+print("Random Forest is finished working.")
+cat(sprintf("Time: %s\n", Sys.time()))

@@ -53,3 +53,5 @@ data/output/*.csv
 data/output/Submit/*.csv
 data/output/Clustering/*.csv
 data/output/Normalization/*.csv
+
+data/output/Random Forest/RF_model_CV_each_10.RData
