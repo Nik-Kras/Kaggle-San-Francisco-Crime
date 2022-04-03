@@ -112,7 +112,8 @@ train_set    <- train_step[dt,]
 # write.csv(accuracy_ntree, file="data/output/Random Forest/Accuracy_ntree.csv", 
 #           row.names=FALSE)
 
-best_ntrees <- 700 # Rising from 100 to 700, then constant
+# Will try to use 200 accordingly to stop decreasing of the loss in CV model!
+best_ntrees <- 200 # Rising from 100 to 700, then constant
 
 # print("Search for the best number of features")
 # accuracy_mtry <- rep(0, 12)
@@ -147,7 +148,9 @@ best_ntrees <- 700 # Rising from 100 to 700, then constant
 
 accuracy_mtry <- read.csv("data/output/Random Forest/Accuracy_mtry.csv")
 accuracy_mtry <- as.numeric(unlist(accuracy_mtry))
-best_mtry <- which.max(accuracy_mtry)   # max mtry 2 or 3
+
+# mtry 2 is better for Accuracy by 0.1%, mtry 3 is better for Kappa by 0.1
+best_mtry <- 3 #which.max(accuracy_mtry)   # max mtry 2 or 3
 
 rf_default1 <- randomForest(Category ~ .,
                             train_set,
@@ -235,7 +238,7 @@ library(e1071)
 
 numFolds <- trainControl(method = "cv", number = 10, search ="grid")
 
-tuneGrid <- expand.grid(.mtry = c(best_mtry, best_mtry+1))
+tuneGrid <- expand.grid(.mtry = c(best_mtry))
 rf_CV <- train(Category ~ ., 
                 data = train_set, 
                 method = "rf", 
