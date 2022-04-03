@@ -15,11 +15,14 @@
 #
 
 # install.packages("randomForest") # For randomForest
+# install.packages('MLmetrics')    # For LogLoss
+
 library(randomForest)
 library(caret)
 library(e1071)
 library(class)
 library(data.table)
+library(MLmetrics)
 
 # Load data --------------------------------------------------
 rm(list=ls())
@@ -62,11 +65,83 @@ train_set    <- train_step[dt,]
 
 # $Category <- factor(train_step$Category)
 
+# Search for ntree ###################################
+
+print("Search for the best number of trees")
+accuracy_ntree <- rep(0, 20)
+n_trees = seq(100,1500,100)
+for (i in n_trees)
+{
+  temp_acc1 <- rep(0,10)
+  for (j in 1:10)
+  {
+    rf_default1 <- randomForest(Category ~ .,
+                                train_set,
+                                ntree=i,
+                                mtry=3)
+    predict_valid1 <- predict(rf_default1, validate_set[,1:12])
+    temp_acc1[j] <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
+    
+    cat(sprintf("Attempt number %d/10\n", j))
+    cat(sprintf("Temp accuracy %f\n", temp_acc1[j]))
+  }
+  
+  temp_acc2 <- rep(0,10)
+  for (j in 1:10)
+  {
+    rf_default1 <- randomForest(Category ~ .,
+                                train_set,
+                                ntree=i,
+                                mtry=4)
+    predict_valid1 <- predict(rf_default1, validate_set[,1:12])
+    temp_acc2[j] <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
+    
+    cat(sprintf("Attempt number %d/10\n", j))
+    cat(sprintf("Temp accuracy %f\n", temp_acc2[j]))
+  }
+  
+  accuracy_ntree[i/100] <- (sum(temp_acc2)+sum(temp_acc1))/20
+  
+  cat(sprintf("ntree = %d/2000\n", i))
+  cat(sprintf("Accuracy is: %.2f%%\n", 100*accuracy_ntree[i/100]))
+  print("###################################")
+}
+
+plot(x=n_trees, y=accuracy_ntree)
+
+write.csv(accuracy_ntree, file="data/output/Submit/KNN_output_labels.csv", 
+          row.names=FALSE)
+
+best_ntrees <- 700
+
+print("Search for the best number of trees")
+accuracy_mtry <- rep(0, 12)
+mtry = 1:12
+for (i in mtry)
+{
+  rf_default1 <- randomForest(Category ~ .,
+                              train_set,
+                              ntree=best_ntrees,
+                              mtry=i)
+  
+  
+  predict_valid1 <- predict(rf_default1, validate_set[,1:12])
+  
+  c1 <- confusionMatrix(predict_valid1, validate_set$Category)$overall[1]
+  
+  accuracy_mtry[i] <- c1
+  
+  cat(sprintf("ntree = %d/12\n", i))
+  cat(sprintf("Accuracies are: %.2f\n", 100*c1))
+  print("###################################")
+}
+
+best_mtry <- which.max(accuracy_mtry)
+
 rf_default1 <- randomForest(Category ~ .,
                             train_set,
-                            ntree=2000,
-                            mtry=7,        # Try 2-best Acc or 7-best Kappa, 12
-                            maxnodes=500)
+                            ntree=best_ntrees,
+                            mtry=best_mtry)
 
 # To check important variables
 importance(rf_default1)
@@ -96,6 +171,9 @@ importance(rf_default1)
 predict_valid <- predict(rf_default1, validate_set[,1:12])
 
 print(confusionMatrix(predict_valid, validate_set$Category))
+
+cat(sprintf("Log-loss: %f", LogLoss(as.numeric(levels(validate_set$Category))[validate_set$Category],
+                                    as.numeric(levels(predict_valid))[predict_valid])))
 
 plot(predict_valid)
 
