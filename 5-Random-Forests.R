@@ -73,7 +73,7 @@ library(e1071)
 # Using full data it can not allocate 8 Gb of memory (16 Gb in total)
 # So, 1/step of training data was chosen
 # (While previously I could work on whole data, something is wrong)
-step <- 40
+step <- 5
 train_step  <- train[seq(1, nrow(train), step),]
 
 print("Doing ntrees = 700")
@@ -82,7 +82,7 @@ cat(sprintf("Time: %s\n", Sys.time()))
 numFolds <- trainControl(method = "cv", number = 10)
 
 # Frequency Analysis showed that most trees has 2000 nodes, so setting 
-# Min number as 1200 qill increase growth
+# Min number as 1200 qill increase growth (MISTAKE confused what parameter is!)
 best_nodesize <- 1200
 
 tuneGrid <- expand.grid(.mtry = c(best_mtry))
@@ -91,8 +91,39 @@ rf_CV <- train(Category ~ .,
                method = "rf",
                trControl = numFolds,
                tuneGrid = tuneGrid,
-               ntree = best_ntrees,
-               nodesize= 20)
+               ntree = best_ntrees)
+
+# Meaning of parameter tuning - https://arxiv.org/pdf/1804.03515.pdf
+# https://stats.stackexchange.com/questions/158583/what-does-node-size-refer-to-in-the-random-forest
+# Try nodesize = 13 just for fun - Fibonachi series:(1,2,3,5,8,13)
+
+# Fit a random forest classification model with spark.randomForest
+# rf_CV <- spark.randomForest(train_step, 
+#                             Category ~ ., 
+#                             "classification", 
+#                             numTrees = best_ntrees,
+#                             maxDepth = 20)
+# install.packages("sparklyr")
+# library(sparklyr)
+# rf_CV_spark <- train_step %>%
+#   ml_random_forest(Category ~ .,
+#                    type = "classification",
+#                    maxDepth = 20,
+#                    numTrees = best_ntrees,
+#                    mtry = best_mtry)
+
+# if (!require('devtools')) install.packages('devtools')
+# devtools::install_github('apache/spark@v3.x.x', subdir='R/pkg')
+# library(SparkR)
+# sparkR.session(appName = "SparkR-ML-randomForest-example")
+# model <- spark.randomForest(train_step, 
+#                             Category ~ ., 
+#                             "classification", 
+#                             maxDepth = 20,
+#                             numTrees = best_ntrees,
+#                             mtry = best_mtry)
+# Finish code with
+# sparkR.session.stop()
 
 # Deeper trees reduces the bias; more trees reduces the variance.
 # maxnodes = 20
@@ -118,10 +149,10 @@ colnames(Id) <- "Id"
 df <- cbind(Id, df)
 
 path = "data/output/Submit/"
-name = "RF_submission_all_train_CV_prob_ntree_700_each_50_nodesize.csv"
-# write.csv(df, file=paste(path, name, sep=""), row.names=FALSE)
+name = "RF_submission_all_train_CV_prob_ntree_700_each_5.csv"
+write.csv(df, file=paste(path, name, sep=""), row.names=FALSE)
 
-# save(rf_CV,file = "data/output/Random Forest/RF_model_m3_n700_CV_prob_each_50_nodesize.RData")
+save(rf_CV,file = "data/output/Random Forest/RF_model_m3_n700_CV_prob_each_5.RData")
 
 
 z <- colSums(df)
