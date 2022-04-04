@@ -378,5 +378,6 @@ save(rf_CV,file = "data/output/Random Forest/RF_model_m3_n700_CV_prob_each_5.RDa
 #             name = "RF_submission_all_train.csv",
 #             path = "data/output/Submit/")
 # 
-# print("Random Forest is finished working.")
-# cat(sprintf("Time: %s\n", Sys.time()))
+
+print("Random Forest is finished working.")
+cat(sprintf("Time: %s\n", Sys.time()))
