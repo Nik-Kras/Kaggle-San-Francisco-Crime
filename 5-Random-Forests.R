@@ -56,12 +56,12 @@ cat(sprintf("Time: %s\n", Sys.time()))
 
 set.seed(1203)
 
-step <- 10
-train_step  <- train[seq(1, nrow(train), step),]
-
-dt           <- sort(sample(nrow(train_step), nrow(train_step)*0.7))
-validate_set <- train_step[-dt,]
-train_set    <- train_step[dt,]
+# step <- 10
+# train_step  <- train[seq(1, nrow(train), step),]
+# 
+# dt           <- sort(sample(nrow(train_step), nrow(train_step)*0.7))
+# validate_set <- train_step[-dt,]
+# train_set    <- train_step[dt,]
 
 # $Category <- factor(train_step$Category)
 
@@ -152,26 +152,26 @@ accuracy_mtry <- as.numeric(unlist(accuracy_mtry))
 # mtry 2 is better for Accuracy by 0.1%, mtry 3 is better for Kappa by 0.1
 best_mtry <- 3 #which.max(accuracy_mtry)   # max mtry 2 or 3
 
-rf_default1 <- randomForest(Category ~ .,
-                            train_set,
-                            ntree=best_ntrees,
-                            mtry=best_mtry)
-
-# To check important variables
-importance(rf_default1)
-varImpPlot(rf_default1)
-
-# Visualisation
-hist(treesize(rf_default1),
-     main = "No. of Nodes for the Trees",
-     col = "green")
-
-# Variable Importance
-varImpPlot(rf_default1,
-           sort = T,
-           n.var = 10,
-           main = "Top 10 - Variable Importance")
-importance(rf_default1)
+# rf_default1 <- randomForest(Category ~ .,
+#                             train_set,
+#                             ntree=best_ntrees,
+#                             mtry=best_mtry)
+# 
+# # To check important variables
+# importance(rf_default1)
+# varImpPlot(rf_default1)
+# 
+# # Visualisation
+# hist(treesize(rf_default1),
+#      main = "No. of Nodes for the Trees",
+#      col = "green")
+# 
+# # Variable Importance
+# varImpPlot(rf_default1,
+#            sort = T,
+#            n.var = 10,
+#            main = "Top 10 - Variable Importance")
+# importance(rf_default1)
 # MeanDecreaseGini
 
 # Worked 30 mins for "each 10th sample"!!!
@@ -182,14 +182,14 @@ importance(rf_default1)
 #                                         number = 5)
 # )
 
-predict_valid <- predict(rf_default1, validate_set[,1:12])
-
-print(confusionMatrix(predict_valid, validate_set$Category))
-
-cat(sprintf("Log-loss: %f", LogLoss(as.numeric(levels(validate_set$Category))[validate_set$Category],
-                                    as.numeric(levels(predict_valid))[predict_valid])))
-
-plot(predict_valid)
+# predict_valid <- predict(rf_default1, validate_set[,1:12])
+# 
+# print(confusionMatrix(predict_valid, validate_set$Category))
+# 
+# cat(sprintf("Log-loss: %f", LogLoss(as.numeric(levels(validate_set$Category))[validate_set$Category],
+#                                     as.numeric(levels(predict_valid))[predict_valid])))
+# 
+# plot(predict_valid)
 
 # Takes too long (and probably stucks)
 # rf_default <- train(formula = Category ~ ., 
@@ -213,20 +213,20 @@ plot(predict_valid)
 #       tuneGrid = NULL)
 
 # Print the results
-print(rf_default1)
+# print(rf_default1)
 
 # Apply to test data -----------------------------------------
-cat(sprintf("Time: %s\n", Sys.time()))
-print("Predict test daatset...")
-
-rf.pred <- predict(rf_default1, test)
-
-# Reset levels order to make the submission table
-rf.pred2 <- as.numeric(levels(rf.pred))[rf.pred]
-rf.pred2 <- factor(rf.pred2, levels=1:39)
-
-write.csv(rf.pred, file="data/output/Submit/RF_each_10_train.csv", 
-          row.names=FALSE)
+# cat(sprintf("Time: %s\n", Sys.time()))
+# print("Predict test daatset...")
+# 
+# rf.pred <- predict(rf_default1, test)
+# 
+# # Reset levels order to make the submission table
+# rf.pred2 <- as.numeric(levels(rf.pred))[rf.pred]
+# rf.pred2 <- factor(rf.pred2, levels=1:39)
+# 
+# write.csv(rf.pred, file="data/output/Submit/RF_each_10_train.csv", 
+#           row.names=FALSE)
 
 # Create the best model and predict  -------------------------
 
@@ -236,34 +236,92 @@ print("Applying 10-fold Cross Validation...")
 library(caret)
 library(e1071)
 
-rf_CV <- randomForest(Category ~ .,
-                      train_set,
-                      ntree=best_ntrees,
-                      mtry=best_mtry)
+step <- 5
+train_step  <- train[seq(1, nrow(train), step),]
 
-# numFolds <- trainControl(method = "cv", number = 10, search ="grid")
+# rf_CV <- randomForest(Category ~ .,
+#                       train_set,
+#                       ntree=best_ntrees,
+#                       mtry=best_mtry)
+
+# print("Doing ntrees = 200")
 # 
-# tuneGrid <- expand.grid(.mtry = c(best_mtry))
-# rf_CV <- train(Category ~ ., 
-#                 data = train, 
-#                 method = "rf", 
-#                 trControl = numFolds,
-#                 tuneGrid = tuneGrid,
-#                 ntree = best_ntrees,
-#                 importance = TRUE)
+# # numFolds <- trainControl(method = "cv", number = 10, search ="grid")
+# # 
+# # tuneGrid <- expand.grid(.mtry = c(best_mtry))
+# # rf_CV <- train(Category ~ .,
+# #                 data = train,
+# #                 method = "rf",
+# #                 trControl = numFolds,
+# #                 tuneGrid = tuneGrid,
+# #                 ntree = best_ntrees,
+# #                 importance = TRUE)
+# 
+# load("data/output/Random Forest/RF_model_m3_n200_CV.RData")
+# 
+# rf_CV <- rf_final_CV
+# 
+# rf.pred <- predict(rf_CV, test, 
+#                    type = 'prob')
+# # To make a submission with ptobabilities -- Preparation
+# SubmitTable <- data.table(read.csv("./data/dataset/sampleSubmission.csv",
+#                                    check.names=FALSE))
+# # First name is "ID" all next are categories
+# ListCategories <- colnames(SubmitTable)[-1]  
+# 
+# # To make a submission with ptobabilities
+# rf.pred2 = data.frame(rf.pred)
+# colnames(rf.pred2) <- as.numeric(substr(names(rf.pred2), 2, 3))
+# right_order_names <- as.character(1:39)
+# df<-rf.pred2[right_order_names]
+# 
+# colnames(df) <- ListCategories
+# Id = data.frame(0:(nrow(df)-1))
+# colnames(Id) <- "Id"
+# df <- cbind(Id, df)
+# 
+# path = "data/output/Submit/"
+# name = "RF_submission_all_train_CV_prob_ntree_200.csv"
+# write.csv(df, file=paste(path, name, sep=""), row.names=FALSE)
+# 
+# rf_final_CV <- rf_CV$finalModel
 
-# # Worked 30 mins for "each 10th sample"!!!
-# rf_CV <- train(Category ~ .,
-#                data = train_set,
-#                method = 'rf',
-#                trControl = trainControl(method = 'cv',
-#                                         number = 10)
-# )
+# save(rf_final_CV,file = "data/output/Random Forest/RF_model_m3_n200_CV_prob.RData")
 
+# # To check important variables
+# importance(rf_final_CV)
+# varImpPlot(rf_final_CV)
+# 
+# # Visualisation
+# hist(treesize(rf_final_CV),
+#      main = "No. of Nodes for the Trees",
+#      col = "green")
+# 
+# # Variable Importance
+# varImpPlot(rf_final_CV,
+#            sort = T,
+#            n.var = 10,
+#            main = "Top 10 - Variable Importance")
+# importance(rf_final_CV)
+
+print("Doing ntrees = 700")
+cat(sprintf("Time: %s\n", Sys.time()))
+
+numFolds <- trainControl(method = "cv", number = 10, search ="grid")
+
+# Using full data it can not allocate 8 Gb of memory (16 Gb in total)
+# So, 1/5 of training data was chosen
+# (While previously I could work on whole data, something is wrong)
+tuneGrid <- expand.grid(.mtry = c(best_mtry, best_mtry+1))
+rf_CV <- train(Category ~ .,
+               data = train_step,
+               method = "rf",
+               trControl = numFolds,
+               tuneGrid = tuneGrid,
+               ntree = 700)
 
 rf.pred <- predict(rf_CV, test, 
                    type = 'prob')
-
 # To make a submission with ptobabilities -- Preparation
 SubmitTable <- data.table(read.csv("./data/dataset/sampleSubmission.csv",
                                    check.names=FALSE))
@@ -282,16 +340,26 @@ colnames(Id) <- "Id"
 df <- cbind(Id, df)
 
 path = "data/output/Submit/"
-name = "RF_submission_all_train_prob.csv"
+name = "RF_submission_all_train_CV_prob_ntree_700_each_5.csv"
 write.csv(df, file=paste(path, name, sep=""), row.names=FALSE)
 
-# Reset levels order to make the submission table
-# rf.pred2 <- as.numeric(levels(rf.pred))[rf.pred]
-# rf.pred2 <- factor(rf.pred2, levels=1:39)
-# 
-# rf_final_CV <- rf_CV$finalModel
+save(rf_CV,file = "data/output/Random Forest/RF_model_m3_n700_CV_prob_each_5.RData")
 
-save(rf_CV,file = "data/output/Random Forest/RF_model_m3_n200_CV_prob.RData")
+# # To check important variables
+# importance(rf_final_CV)
+# varImpPlot(rf_final_CV)
+# 
+# # Visualisation
+# hist(treesize(rf_final_CV),
+#      main = "No. of Nodes for the Trees",
+#      col = "green")
+# 
+# # Variable Importance
+# varImpPlot(rf_final_CV,
+#            sort = T,
+#            n.var = 10,
+#            main = "Top 10 - Variable Importance")
+# importance(rf_final_CV)
 
 # To load model
 # load("data/output/Random Forest/RF_model_CV_each_10.RData")
@@ -301,14 +369,14 @@ save(rf_CV,file = "data/output/Random Forest/RF_model_m3_n200_CV_prob.RData")
 
 # Make and save the submission  --------------------------------
 
-cat("Making submission file!")
-
-source('make_submission.R')
-
-make_submit(labesl_predict = rf.pred2,
-            category_names = ListCategories,
-            name = "RF_submission_all_train.csv",
-            path = "data/output/Submit/")
-
-print("Random Forest is finished working.")
-cat(sprintf("Time: %s\n", Sys.time()))
+# cat("Making submission file!")
+# 
+# source('make_submission.R')
+# 
+# make_submit(labesl_predict = rf.pred2,
+#             category_names = ListCategories,
+#             name = "RF_submission_all_train.csv",
+#             path = "data/output/Submit/")
+# 
+# print("Random Forest is finished working.")
+# cat(sprintf("Time: %s\n", Sys.time()))
