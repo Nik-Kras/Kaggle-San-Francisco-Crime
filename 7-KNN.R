@@ -22,6 +22,9 @@ library(scales)
 library(class)
 library(data.table)
 
+#install.packages('RANN')
+library(RANN)
+
 # Load data --------------------------------------------------
 rm(list=ls())
 
@@ -53,7 +56,7 @@ train <- cbind(train, Category = train_labels)
 # Relatively small part of dataset to spend hours, not days
 # 878,000 samples ---> 17,560 samples
 
-step <- 100
+step <- 20
 train_step  <- train[seq(1, nrow(train), step),]
 labels_step <- train_labels[seq(1, nrow(train), step)]
 
@@ -102,37 +105,65 @@ rm(dt, step, labels_step, train_step)
 
 # The search for the best model  -------------------------------
 
-K_check = c(1, 10, 50, 100, 501, 1000, 2000, 4000)
+K_check = c(1, 10, 50, 100, 500, 1000, 2000, 4000)
 Accuracy <- c()
 
-cat(sprintf("The loop is setting which will try all K from the list\n"))
+knn.pred <- nn2(data=train_set,
+                query=validate_set,
+                k=K_check[2])
 
-for (i in K_check)
-{
-  K <- i
-  knn.pred <- knn(train=train_set, 
-                  test=validate_set, 
-                  cl=labels_train, 
-                  k=K,
-                  l=1,
-                  use.all = FALSE)
-  
-  knn.pred <- factor(as.character(knn.pred), levels = 1:39)
+# Lab_matrix <- data.frame(knn.pred$nn.idx)
+# for (j in 1:10)
+# {
+#   Lab_vector <- train$Category[knn.pred$nn.idx[j,]]
+#   Lab_matrix[j,] <- Lab_vector
+# }
 
-  labels_valid_factor <- factor(as.character(labels_valid),
-                                levels = 1:39)
+A <- matrix(train$Category[knn.pred$nn.idx])
+B <- matrix(A,ncol=K_check[2])
 
-  CM <- confusionMatrix(table(knn.pred,labels_valid_factor))
-  Accuracy <- append(Accuracy, CM$overall["Accuracy"])
-
-  cat("---------------------------------------------------\n")
-  cat(sprintf("The KNN model parameters: K=%d\n", K))
-  cat(sprintf("The accuracy is %.2f%% \n", CM$overall["Accuracy"]*100))
-  cat(sprintf("Time: %s\n", Sys.time()))
+my_fun <- function(B_mat){
+  sort(table(B),decreasing=TRUE)[1:3]
 }
 
-cat("The loop is finished. The accuracy for each K number
-    can be seen on the plot\n")
+
+
+##########
+# K_check = c(1, 10, 50, 100, 500, 1000, 2000, 4000)
+# Accuracy <- c()
+# 
+# cat(sprintf("The loop is setting which will try all K from the list\n"))
+# 
+# for (i in K_check)
+# {
+#   K <- i
+#   
+#   Labels_num <- as.numeric(levels(labels_train))[labels_train]
+#   knn.pred <- knn(train=train_set,
+#                   test=validate_set,
+#                   cl=labels_train,
+#                   k=K,
+#                   l=1,
+#                   use.all = FALSE)
+#   
+#   
+#   
+#   knn.pred <- factor(as.character(knn.pred), levels = 1:39)
+# 
+#   labels_valid_factor <- factor(as.character(labels_valid),
+#                                 levels = 1:39)
+# 
+#   CM <- confusionMatrix(table(knn.pred,labels_valid_factor))
+#   Accuracy <- append(Accuracy, CM$overall["Accuracy"])
+# 
+#   cat("---------------------------------------------------\n")
+#   cat(sprintf("The KNN model parameters: K=%d\n", K))
+#   cat(sprintf("The accuracy is %.2f%% \n", CM$overall["Accuracy"]*100))
+#   cat(sprintf("Time: %s\n", Sys.time()))
+# }
+# 
+# cat("The loop is finished. The accuracy for each K number
+#     can be seen on the plot\n")
 
 #############################
 # set.seed(400)
